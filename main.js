@@ -95,10 +95,12 @@ function analizar(cadena)
         cad=lineas[i].split(" ");//dividir las lineas en palabras
         for(let j=0;j<cad.length;j++)
         {
+            var res=false;
+            var noyet=false;
             cad[j]=cad[j].replace("\n","");
             if(cad[j]=="")
             {
-                espacio(" ",token6,j); 
+                espacio(" ",token6,j); //espacio
             }
             else
             {
@@ -109,35 +111,37 @@ function analizar(cadena)
                 {
                     if(es(cad[j],len.letras))
                     {
-                        res=false;
+                        
                         len.reservado.forEach(element =>{
                             if(element==cad[j])
                             {
-                                reservado(cad[j],j,element);
+                                reservado(cad[j],j,element);//P reservadas
                                 res=true;
+                                
                             }
                             
                         });
                         if(!res)
                         {
+                            noyet=true;
                             variable(cad[j],token1,j,i);
                         }
                     }
                     if(es(cad[j],token2.lenguaje))
                     {
-                        num(cad[j],j,token2.nombre);
+                        num(cad[j],j,token2.nombre);//numeros
                     }
                     if(es(cad[j],token3.lenguaje))
                     {
-                        op(cad[j],j,token3.nombre);
+                        op(cad[j],j,token3.nombre);//operadores
                     }
                     if(es(cad[j],token5.lenguaje))
                     {
-                        op(cad[j],j,token5.nombre);
+                        op(cad[j],j,token5.nombre);//asignacion
                     }
-                    if(es(cad[j],token4.lenguaje))
+                    if(es(cad[j],token1.lenguaje) && !res && !noyet)
                     {
-                        variable(cad[j],token4,j,i);
+                        variable(cad[j],token1,j,i);//variables
                     }
                     else
                     {
@@ -161,7 +165,7 @@ function error(cadena,token,npalabra)
         {
             err++;
             //la cadena empieza con cero o no pertenece al lenguaje
-            document.getElementById("tbody").innerHTML+="<tr><td>"+token.nombre+"</td><td>Palabra Numero: "+npalabra+"<br>Cadena: "+cadena+"<br>caracter: "+cadena[i]+"<br>  posicion("+(i+1)+")</td><td> la variable no pertenece al lenguaje</td></tr>";
+            document.getElementById("tbody").innerHTML+="<tr><td>"+token.nombre+"</td><td>Palabra Numero: "+npalabra+"<br>Cadena: "+cadena+"<br>caracter: "+cadena[i]+"<br>  posicion("+(i+1)+")</td><td>Caracter no pertenece al lenguaje</td></tr>";
             document.getElementById("err").innerText=err;
         } 
     }
@@ -201,7 +205,7 @@ function variable(cadena,token,npalabra,nlinea){
             if(len.numeros.indexOf(cadena[i])==-1)
             {
                 //cadena no empieza con numero
-                if(token.lenguaje.indexOf(cadena[i])>0)
+                if(token.lenguaje.indexOf(cadena[i])>=0)
                 {
                     //la cadena pertenece al lenguaje
                 }
