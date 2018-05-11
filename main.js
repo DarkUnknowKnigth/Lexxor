@@ -129,6 +129,7 @@ function analizar(cadena)
                     }
                     if(es(cad[j],token2.lenguaje))
                     {
+                        noyet=true;
                         num(cad[j],j,token2.nombre);//numeros
                     }
                     if(es(cad[j],token3.lenguaje))
