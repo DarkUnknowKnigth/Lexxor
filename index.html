@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
+    <title>Lexxor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="head">
+        <nav class="pure-menu pure-menu-horizontal">
+            <a class="pure-menu-heading pure-menu-link" href="#">Lexxor</a>
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item"><a class="pure-menu-link" href="#a" id="analizador">Analizador</a></li>
+                <li class="pure-menu-item"><a class="pure-menu-link" href="#e" id="errores">Resultados</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div id="a" class="pure-g visible view">
+            <div class="pure-u-1-5">
+                <h3>Analizador <i>Lexico</i></h3>
+                <textarea class="pure-input-1" name="editor" id="texto" cols="165" rows="26"></textarea>
+                <button class="pure-button" id="analiza">Analizar</button>
+            </div>
+        </div>
+        <div id="e"  class="pure-g novisible view">
+            <div class="pure-u-1">
+                <h5>Errores encontrados: <Span id="err"></Span></h5>                
+            </div>
+            <div class="pure-u-1-2">
+                <table class="pure-table pure-table-bordered">
+                    <thead>
+                        <h3>Errores</h3>
+                        <tr>
+                            <th >Token</th>
+                            <th >Lexema</th> 
+                            <th >Error</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody">
+
+                    </tbody>
+                </table>    
+                 
+            </div>    
+            <div class="pure-u-1-2">
+                <table class="pure-table pure-table-bordered">
+                    <thead>
+                        <h3>Tokens</h3>
+                        <tr>
+                            <th >Token</th>
+                            <th >Lexema</th> 
+                        </tr>
+                    </thead>
+                    <tbody id="tbody2">
+
+                    </tbody>
+                </table>   
+            </div>        
+        </div>
+    </main>
+    <footer>
+        
+    </footer>
+    <script src="main.js"></script>
+</body>
+</html>
