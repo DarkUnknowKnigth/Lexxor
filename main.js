@@ -8,6 +8,7 @@ var len= {
     "espacio":" "};
 // var len = JSON.parse(lenguaje);
 var err=0;
+var tabla_token=[];
 window.onload=()=>
 {
     vistas=document.getElementsByClassName("view");
@@ -24,7 +25,8 @@ window.onload=()=>
         document.getElementById("tbody").innerHTML="";
         document.getElementById("tbody2").innerHTML="";
         analizar(document.getElementById('texto').value); 
-        document.getElementById("errores").click();       
+        document.getElementById("errores").click();   
+        generar_reporte(tabla_token);
     };
     window.onkeypress=(e)=>{
         if(e.keyCode==10 && e.ctrlKey)
@@ -48,7 +50,28 @@ class token {
         this.lenguaje = lenguaje;
     }
 };
-
+class TokenLexema{
+    constructor(nombre,lenguaje,lexema){
+        this.nombre=nombre;
+        this.lenguaje=lenguaje;
+        this.lexema=lexema;   
+    }
+};
+function generar_reporte(array){  
+    var tb = "\ntoken\t\tlenguaje\t\t\t\tlexema\n\n";
+    var tobj="";
+    array.forEach(element => {
+        tb+=`${element.nombre}\t${element.lenguaje}\t${element.lexema}\n`;
+        tobj+=JSON.stringify({
+            "nombre":element.nombre,
+            "lenguaje":element.lenguaje,
+            "lexema":element.lexema});
+    });
+    var elem = document.getElementById('descargar');
+    elem.download = "TablaTokens.txt";
+    elem.href = "data:application/octet-stream,"+ encodeURIComponent(tb);   
+   // console.log(tobj);    
+}
 function visible(array,si)
 {
     for (let i = 0; i < array.length; i++) {
@@ -90,8 +113,8 @@ function analizar(cadena)
     var token6= new token("ESPACIO",len.espacio);//
     for(let i=0;i<lineas.length-1;i++)
     {
-        document.getElementById("tbody").innerHTML+="<tr><td colspan='3'>Linea "+(i+1)+": "+lineas[i]+"</td></tr>";
-        document.getElementById("tbody2").innerHTML+="<tr><td colspan='2'>Linea "+(i+1)+"</td></tr>";
+        document.getElementById("tbody").innerHTML+="<tr class='line-error'><td colspan='3'>Linea "+(i+1)+": "+lineas[i]+"</td></tr>";
+        document.getElementById("tbody2").innerHTML+="<tr class='line'><td colspan='2'>Linea "+(i+1)+"</td></tr>";
         cad=lineas[i].split(" ");//dividir las lineas en palabras
         for(let j=0;j<cad.length;j++)
         {
@@ -104,51 +127,46 @@ function analizar(cadena)
             }
             else
             {
-                if(cad[j]=="")
+                if(es(cad[j],len.letras))
                 {
+                    
+                    len.reservado.forEach(element =>{
+                        if(element==cad[j])
+                        {
+                            reservado(cad[j],j,element);//P reservadas
+                            res=true;
+                            
+                        }
+                        
+                    });
+                    if(!res)
+                    {
+                        noyet=true;
+                        variable(cad[j],token1,j,i);
+                    }
+                }
+                if(es(cad[j],token2.lenguaje))
+                {
+                    noyet=true;
+                    num(cad[j],j,token2.nombre);//numeros
+                }
+                if(es(cad[j],token3.lenguaje))
+                {
+                    op(cad[j],j,token3.nombre);//operadores
+                }
+                if(es(cad[j],token5.lenguaje))
+                {
+                    asig(cad[j],j,token5.nombre);//asignacion
+                }
+                if(es(cad[j],token1.lenguaje) && !res && !noyet)
+                {
+                    variable(cad[j],token1,j,i);//variables
                 }
                 else
                 {
-                    if(es(cad[j],len.letras))
-                    {
-                        
-                        len.reservado.forEach(element =>{
-                            if(element==cad[j])
-                            {
-                                reservado(cad[j],j,element);//P reservadas
-                                res=true;
-                                
-                            }
-                            
-                        });
-                        if(!res)
-                        {
-                            noyet=true;
-                            variable(cad[j],token1,j,i);
-                        }
-                    }
-                    if(es(cad[j],token2.lenguaje))
-                    {
-                        noyet=true;
-                        num(cad[j],j,token2.nombre);//numeros
-                    }
-                    if(es(cad[j],token3.lenguaje))
-                    {
-                        op(cad[j],j,token3.nombre);//operadores
-                    }
-                    if(es(cad[j],token5.lenguaje))
-                    {
-                        op(cad[j],j,token5.nombre);//asignacion
-                    }
-                    if(es(cad[j],token1.lenguaje) && !res && !noyet)
-                    {
-                        variable(cad[j],token1,j,i);//variables
-                    }
-                    else
-                    {
-                        error(cad[j],{"nombre":"ERROR","lenguaje":len.letras+len.numeros},j);
-                    }
-                }    
+                    error(cad[j],{"nombre":"ERROR","lenguaje":len.letras+len.numeros+len.asignacion+len.signos},j);
+                }
+                   
             }   
         }
     }
@@ -166,7 +184,7 @@ function error(cadena,token,npalabra)
         {
             err++;
             //la cadena empieza con cero o no pertenece al lenguaje
-            document.getElementById("tbody").innerHTML+="<tr><td>"+token.nombre+"</td><td>Palabra Numero: "+npalabra+"<br>Cadena: "+cadena+"<br>caracter: "+cadena[i]+"<br>  posicion("+(i+1)+")</td><td>Caracter no pertenece al lenguaje</td></tr>";
+            document.getElementById("tbody").innerHTML+="<tr><td>"+token.nombre+"</td><td><b><b>Palabra Numero:</b></b> "+npalabra+"<br><b>Cadena:</b> "+cadena+"<br>caracter: "+cadena[i]+"<br>  posicion("+(i+1)+")</td><td>Caracter no pertenece al lenguaje</td></tr>";
             document.getElementById("err").innerText=err;
         } 
     }
@@ -179,22 +197,28 @@ function es(cadena,lenguaje)
         {
             pass=false;
         }
-        
     }
     return pass;
 }
 function op(cadena,npalabra,token)
 {
-    document.getElementById("tbody2").innerHTML+="<tr><td>"+token+"</td><td>Palabra Numero:"+npalabra+" Cadena: "+cadena;
-
+    document.getElementById("tbody2").innerHTML+="<tr><td>"+token+"</td><td><b>Palabra Numero: </b>"+npalabra+" <b><br>Cadena:</b> "+cadena;
+    tabla_token.push(new TokenLexema(token,len.signos,cadena));
+}
+function asig(cadena,npalabra,token)
+{
+    document.getElementById("tbody2").innerHTML+="<tr><td>"+token+"</td><td><b>Palabra Numero: </b>"+npalabra+" <b><br>Cadena:</b> "+cadena;
+    tabla_token.push(new TokenLexema(token,len.asignacion,cadena));
 }
 function reservado(cadena,npalabra,token)
 {
-    document.getElementById("tbody2").innerHTML+="<tr><td>"+token+"</td><td>Palabra Numero:"+npalabra+" Cadena: "+cadena;
+    document.getElementById("tbody2").innerHTML+="<tr><td>"+token+"</td><td><b>Palabra Numero: </b>"+npalabra+" <b><br>Cadena:</b> "+cadena;
+    tabla_token.push(new TokenLexema(token,len.reservado,cadena));
 }
 function num(cadena,npalabra,token)
 {
-    document.getElementById("tbody2").innerHTML+="<tr><td>"+token+"</td><td>Palabra Numero:"+npalabra+" Cadena: "+cadena;
+    document.getElementById("tbody2").innerHTML+="<tr><td>"+token+"</td><td><b>Palabra Numero: </b>"+npalabra+" <b><br>Cadena:</b> "+cadena;
+    tabla_token.push(new TokenLexema(token,len.numeros,cadena));
 }
 function variable(cadena,token,npalabra,nlinea){
     var pass=true;
@@ -214,7 +238,7 @@ function variable(cadena,token,npalabra,nlinea){
                 {
                     err++;
                     pass=false;
-                    document.getElementById("tbody").innerHTML+="<tr><td>"+token.nombre+"</td><td>Palabra Numero: "+npalabra+"<br>Cadena: "+cadena+"<br>caracter: "+cadena[i]+"<br>posicion("+(i+1)+")</td><td> caracter no pertenece al lenguaje</td></tr>";
+                    document.getElementById("tbody").innerHTML+="<tr><td>"+token.nombre+"</td><td><b>Palabra Numero: </b> "+npalabra+"<b><br>Cadena:</b> "+cadena+"<br>caracter: "+cadena[i]+"<br>posicion("+(i+1)+")</td><td> caracter no pertenece al lenguaje</td></tr>";
                 }
             }
             else
@@ -222,7 +246,7 @@ function variable(cadena,token,npalabra,nlinea){
                 err++;
                 pass=false;
                 //la cadena empieza con cero o no pertenece al lenguaje
-                document.getElementById("tbody").innerHTML+="<tr><td>"+token.nombre+"</td><td>Palabra Numero: "+npalabra+"<br>Cadena: "+cadena+" <br>caracter: "+cadena[i]+"<br>  posicion("+(i+1)+")</td><td> variable inicia con numero</td></tr>";
+                document.getElementById("tbody").innerHTML+="<tr><td>"+token.nombre+"</td><td><b>Palabra Numero: </b> "+npalabra+"<b><br>Cadena:</b> "+cadena+" <br>caracter: "+cadena[i]+"<br>  posicion("+(i+1)+")</td><td> variable inicia con numero</td></tr>";
             }
         }
         else
@@ -236,13 +260,14 @@ function variable(cadena,token,npalabra,nlinea){
                 err++;
                 pass=false;
                 //la cadena empieza con cero o no pertenece al lenguaje
-                document.getElementById("tbody").innerHTML+="<tr><td>"+token.nombre+"</td><td>Palabra Numero: "+npalabra+"<br>Cadena: "+cadena+"<br>caracter: "+cadena[i]+"<br>  posicion("+(i+1)+")</td><td> la variable no pertenece al lenguaje</td></tr>";
+                document.getElementById("tbody").innerHTML+="<tr><td>"+token.nombre+"</td><td><b>Palabra Numero:</b> "+npalabra+"<b><br>Cadena:</b> "+cadena+"<br>caracter: "+cadena[i]+"<br>  posicion("+(i+1)+")</td><td> la variable no pertenece al lenguaje</td></tr>";
             } 
         }
     }
     if(pass)
     {
-        document.getElementById("tbody2").innerHTML+="<tr><td>"+token.nombre+"</td><td>Palabra Numero:"+npalabra+" Cadena: "+cadena;
+        document.getElementById("tbody2").innerHTML+="<tr><td>"+token.nombre+"</td><td><b>Palabra:</b> "+npalabra+" <b><br>Cadena:</b> "+cadena;
+        tabla_token.push(new TokenLexema(token.nombre,token.lenguaje,cadena));
     }
  }
  function espacio(caracter,token,npalabra)
@@ -250,7 +275,8 @@ function variable(cadena,token,npalabra,nlinea){
      npalabra+=1;
     if(token.lenguaje.indexOf(caracter)>=0)
     {
-        document.getElementById("tbody2").innerHTML+="<tr><td>"+token.nombre+"</td><td>Palabra Numero:"+npalabra+" Cadena: "+caracter;
+        document.getElementById("tbody2").innerHTML+="<tr><td>"+token.nombre+"</td><td><b>Palabra Numero:</b> "+npalabra+" <b><br>Cadena:</b> "+caracter;
+        tabla_token.push(new TokenLexema(token.nombre,token.lenguaje,caracter));
     }
     else
     {
