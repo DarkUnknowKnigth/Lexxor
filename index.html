@@ -20,13 +20,16 @@
     </header>
     <main>
         <div id="a" class="pure-g visible view">
-            <div class="pure-u-1-5">
+            <div class="pure-u-1-2">
                 <h3>Analizador <i>Lexico</i></h3>
-                <textarea class="pure-input-1" name="editor" id="texto" cols="165" rows="26"></textarea>
                 <button class="pure-button" id="analiza">Analizar</button>
+            </div>
+            <div class="pure-u-1">
+                <textarea class="pure-input-1" name="editor" id="texto" cols="165" rows="26"></textarea> (ctrl+enter) para analizar (shift+enter) escribir
             </div>
         </div>
         <div id="e"  class="pure-g novisible view">
+            
             <div class="pure-u-1">
                 <h5>Errores encontrados: <Span id="err"></Span></h5>                
             </div>
@@ -59,6 +62,7 @@
 
                     </tbody>
                 </table>   
+                (ctrl+ backspace) para regresar
             </div>        
         </div>
     </main>

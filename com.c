@@ -3,7 +3,6 @@
 
 int main()
 {
-
     int lista[TAM]={12,10,5,6,1,3};	 //Declaracion e Inicializacion de un array
     int temp=0; 			 //Variable temporal
     int i,j;			 //variables corredoras del ciclo

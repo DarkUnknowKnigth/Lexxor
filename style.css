@@ -15,11 +15,6 @@ textarea{
     background-color: white;
     color: black;
 }
-button{
-    margin-left:150%;
-    position: static;
-
-}
 .visible{
     display: block;
 }
