@@ -19,9 +19,13 @@
         </nav>
     </header>
     <main>
+        <div id="alert" class="alert alert-primary alert-dismissible fade in" role="alert">
+            <strong>Analizando</strong> Porfavor espere... !
+        </div>
         <div id="a" class="pure-g visible view">
             <div class="pure-u-1-2">
                 <h3>Analizador <i>Lexico</i></h3>
+                <input type="file" class="pure-button" accept=".lexxor,.js,.c" id="load" >
                 <button class="pure-button" id="analiza">Analizar</button>
             </div>
             <div class="pure-u-1">
@@ -56,6 +60,8 @@
                         <tr>
                             <th >Token</th>
                             <th >Lexema</th> 
+                            <th >Linea</th>
+                            <th>#Token</th> 
                         </tr>
                     </thead>
                     <tbody id="tbody2">
